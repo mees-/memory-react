@@ -1,0 +1,4 @@
+div.board {
+	display: inline-grid;
+	justify-content: center;
+}

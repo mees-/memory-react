@@ -1,0 +1,32 @@
+div.cell {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+
+	/* cursor: pointer; */
+	border: 1px solid black;
+	--cell-size: 150px;
+	width: var(--cell-size);
+	height: var(--cell-size);
+}
+
+div.cell > span {
+	font-size: 2em;
+	color: white;
+}
+
+div.cell.open {
+	background-color: blue;
+}
+
+div.cell.closed {
+	background-color: red;
+}
+div.cell.closed > span {
+	display: none;
+}
+
+div.cell.found {
+	background-color: purple;
+}
