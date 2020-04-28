@@ -7,19 +7,19 @@ export default class Board extends Component {
 	constructor(props) {
 		super(props)
 		const { size } = props
-		this.state = { board: this.getFreshState(size) }
+		this.state = this.getFreshState(size)
 	}
 
 	getFreshState(size) {
-		const state = []
+		const board = []
 		let chars = this.randomChars((size * size) / 2)
 		// add another of each char
 		chars = [...chars, ...chars]
 		shuffle(chars)
 		for (let y = 0; y < size; y++) {
-			state[y] = []
+			board[y] = []
 			for (let x = 0; x < size; x++) {
-				state[y].push({
+				board[y].push({
 					char: chars.shift(),
 					state: CellState.Closed,
 					x,
@@ -27,7 +27,7 @@ export default class Board extends Component {
 				})
 			}
 		}
-		return state
+		return { board, clicks: 0 }
 	}
 
 	randomChars(amount) {
@@ -82,6 +82,9 @@ export default class Board extends Component {
 		if (this.state.board[y][x].state === CellState.Found) {
 			return
 		}
+		const setStateAndIncreaseClicks = (newState) => {
+			this.setState({ ...newState, clicks: this.state.clicks + 1 })
+		}
 		const openCells = this.getCellsByState(CellState.Open)
 		const newBoard = clone(this.state.board)
 		switch (openCells.length) {
@@ -92,19 +95,19 @@ export default class Board extends Component {
 				) {
 					newBoard[y][x].state = CellState.Found
 					newBoard[openCells[0].y][openCells[0].x].state = CellState.Found
-					this.setState({ board: newBoard })
+					setStateAndIncreaseClicks({ board: newBoard })
 					break
 				}
 			case 0:
 				newBoard[y][x].state = CellState.Open
-				this.setState({ board: newBoard })
+				setStateAndIncreaseClicks({ board: newBoard })
 				break
 			case 2:
 				for (const { x, y } of openCells) {
 					newBoard[y][x].state = CellState.Closed
 				}
 				newBoard[y][x].state = CellState.Open
-				this.setState({ board: newBoard })
+				setStateAndIncreaseClicks({ board: newBoard })
 				break
 			default:
 				throw new Error("invalid amount of open cells")
@@ -136,11 +139,12 @@ export default class Board extends Component {
 				</div>
 				<button
 					onClick={() => {
-						this.setState({ board: this.getFreshState(this.props.size) })
+						this.setState(this.getFreshState(this.props.size))
 					}}
 				>
 					Reset
 				</button>
+				<span>Clicks: {this.state.clicks}</span>
 			</div>
 		)
 	}
